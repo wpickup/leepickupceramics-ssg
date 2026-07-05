@@ -196,12 +196,12 @@ body.lightbox-open { overflow: hidden; }
 
 .contact-form { max-width: var(--measure); margin-top: 2rem; display: grid; gap: 1.1rem; }
 .contact-form label { display: grid; gap: 0.4rem; font-size: 0.9rem; color: var(--ink-soft); }
-.contact-form input, .contact-form textarea {
+.contact-form input, .contact-form select, .contact-form textarea {
   font: inherit; color: var(--ink);
   padding: 0.7rem 0.8rem; background: #fff;
   border: 1px solid var(--hair); border-radius: 2px;
 }
-.contact-form input:focus, .contact-form textarea:focus { outline: 2px solid var(--oxide); border-color: transparent; }
+.contact-form input:focus, .contact-form select:focus, .contact-form textarea:focus { outline: 2px solid var(--oxide); border-color: transparent; }
 .contact-form button {
   justify-self: start; font: inherit; letter-spacing: 0.04em;
   padding: 0.7rem 1.6rem; border: none; border-radius: 2px;
