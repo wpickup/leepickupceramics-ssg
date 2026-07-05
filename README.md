@@ -36,39 +36,75 @@ mount points; `assets/gallery.js` fetches a live JSON feed from the
 shared-album handshake server-side. New/removed photos in Lee's shared albums
 appear with no rebuild.
 
-## Deploy
+## Deploy — symlink-swap model
 
-Hosted on the OpenBSD VPS (`67.219.101.93`), docroot
-`/htdocs/leepickupceramics.com/current`, served by `httpd` behind `relayd`
-(see [server-config](../server-config)). Same rsync-over-SSH model as
-williampickup-ssg.
+Hosted on the OpenBSD VPS (`67.219.101.93`), served by `httpd` behind `relayd`
+(see [server-config](../server-config)). OpenBSD's `httpd` is chrooted to
+`/var/www`, so its `root ".../current"` is the real path
+`/var/www/htdocs/leepickupceramics.com/current` — a **symlink** you flip:
+
+```
+current -> site         → the Ruby SSG build is live
+current -> maintenance  → holding page (site offline)
+```
+
+Deploys only ever write into the **`site/` release dir**; going live/offline is
+a separate, deliberate `current` flip (`golive.sh`). This reuses the exact
+symlink mechanism the old Node project (`../leepickupceramics.site`, now parked)
+used for its maintenance toggle, and keeps that parked project's files in the
+docroot but web-invisible (httpd only serves `current`).
 
 **Locally:**
 
 ```bash
-DEPLOY_DEST=user@67.219.101.93:/htdocs/leepickupceramics.com/current/ ./deploy.sh
+DEPLOY_DEST=user@67.219.101.93:/var/www/htdocs/leepickupceramics.com/site/ ./deploy.sh
+REMOTE=user@67.219.101.93 ./golive.sh live    # flip current -> site (go live)
+REMOTE=user@67.219.101.93 ./golive.sh maintenance   # take offline
 ```
 
 **Via CI:** `.github/workflows/deploy.yml` runs on manual dispatch
-(Actions tab → *Deploy* → *Run workflow*). It needs four repository secrets —
-the same values as williampickup-ssg except `DEPLOY_PATH`:
+(Actions tab → *Deploy* → *Run workflow*), rsyncing the build into `site/`.
+Four repository secrets — same values as williampickup-ssg except `DEPLOY_PATH`:
 
 | Secret | Value |
 |---|---|
 | `DEPLOY_SSH_KEY` | the deploy private key (same one williampickup-ssg uses) |
 | `DEPLOY_HOST` | `67.219.101.93` |
 | `DEPLOY_USER` | the deploy user on the box |
-| `DEPLOY_PATH` | `/htdocs/leepickupceramics.com/current/` |
+| `DEPLOY_PATH` | `/var/www/htdocs/leepickupceramics.com/site/` |
 
-> ⚠️ **First deploy = go-live.** The rsync uses `--delete`, so the first run
-> replaces the existing RapidWeaver site at the docroot with this build. That's
-> why the workflow is manual-trigger only. To stage first, point `DEPLOY_PATH`
-> at a scratch dir (e.g. `.../next/`) and check it before switching the docroot.
+**Go-live sequence (one-time cutover):**
+
+1. Run the workflow (or `deploy.sh`) once to populate `.../site/`.
+2. Check it, then `./golive.sh live` to flip `current -> site`.
+3. From then on, every deploy rsyncs into `site/` and is immediately live;
+   `./golive.sh maintenance` takes it offline again.
+
+> The `--delete` rsync is safe here because it targets the dedicated `site/`
+> dir, not the docroot (so it can't clobber the parked Node project or the
+> `current`/`maintenance` symlinks).
 
 ## Still to do
 
 - `assets/hero.jpg` is a placeholder (first Current-Work photo) — swap for one
   Lee chooses.
 - Contact form has no handler yet.
-- Content-editing story for Lee (`cms.leepickupceramics.com` backend) is a
-  separate project.
+
+## On the parked Node project (`../leepickupceramics.site`)
+
+A more complex earlier build (Node SSG + git-backed CMS with a pieces/collections
+model) is **parked, not deleted** — reachable via its own preview but offline in
+prod behind the `maintenance` symlink. Decision (2026-07): ship this simpler Ruby
+SSG to get off RapidWeaver now; **Lee's page content is maintained by Will for
+now** (no self-service CMS), revisit the richer site later if wanted.
+
+Ideas worth borrowing from it later:
+
+- **Dark-mode toggle** (system preference + manual switch) — cheap to add here.
+- **Pieces/collections model + individual piece pages** — if the flat iCloud
+  galleries ever need real catalog structure (titles, prices, a shop).
+- **Responsive image variants / WebP** for local images (the galleries already
+  get sized previews from the Worker).
+
+> ⚠️ Its `scratch.txt` contains the **production CMS password in cleartext** —
+> rotate it and remove it from the file regardless of this project's fate.

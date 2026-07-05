@@ -1,8 +1,9 @@
 name: Deploy
 
-# Manual trigger only (like williampickup-ssg) — the first deploy replaces the
-# old RapidWeaver site at the docroot, so go-live is a deliberate button press,
-# not an accident of pushing a commit.
+# Manual trigger only (like williampickup-ssg). This rsyncs the build into the
+# `site/` RELEASE dir (DEPLOY_PATH) — it does NOT touch the docroot symlink.
+# Going live is a separate, deliberate step: flip `current -> site` with
+# golive.sh. Once flipped, subsequent runs of this workflow are immediately live.
 on:
   workflow_dispatch: {}
 
