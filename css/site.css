@@ -1,0 +1,224 @@
+/* leepickupceramics.com — a quiet, gallery-forward identity.
+   Warm gallery-white walls, the photographs carry all the colour, one
+   restrained oxide accent. Deliberately distinct from williampickup.org
+   (dark editorial) and gaiayoga (warm sand/sage). */
+
+:root {
+  --wall:      #f6f3ec;  /* unglazed porcelain / gallery wall */
+  --wall-2:    #efeae0;  /* slightly deeper panel */
+  --ink:       #262220;  /* warm near-black */
+  --ink-soft:  #6f665e;  /* muted text */
+  --hair:      #e4ded4;  /* hairline */
+  --oxide:     #9a5b3f;  /* iron-oxide / terracotta accent */
+  --oxide-dk:  #7c452e;
+
+  --serif: "Newsreader", Georgia, "Times New Roman", serif;
+  --sans:  "Inter", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+
+  --measure: 40rem;
+  --wide:    68rem;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--wall);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--serif);
+  font-weight: 300;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+}
+h1 { font-size: clamp(2rem, 5vw, 3rem); margin: 0 0 1rem; }
+h2 { font-size: 1.5rem; margin: 0 0 0.5rem; }
+
+a { color: var(--oxide); text-decoration: none; }
+a:hover { color: var(--oxide-dk); text-decoration: underline; text-underline-offset: 3px; }
+
+img { max-width: 100%; height: auto; }
+
+/* ── Layout ─────────────────────────────────────────────────────────────── */
+
+.container { width: 100%; max-width: var(--wide); margin: 0 auto; padding: 0 1.5rem; }
+
+#main-content { min-height: 60vh; }
+
+.page-body { padding-top: 3.5rem; padding-bottom: 4.5rem; }
+
+.content { max-width: var(--measure); }
+.content p { margin: 0 0 1.2rem; }
+
+.lead { font-size: 1.2rem; line-height: 1.6; color: var(--ink); }
+.lead p { font-family: var(--serif); font-weight: 300; }
+
+.cta { margin-top: 2rem; font-size: 1.05rem; }
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+
+.site-header { border-bottom: 1px solid var(--hair); }
+.header-inner {
+  max-width: var(--wide); margin: 0 auto; padding: 1.5rem;
+  display: flex; align-items: baseline; justify-content: space-between; gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.site-title {
+  font-family: var(--serif); font-weight: 400; font-size: 1.3rem;
+  color: var(--ink); letter-spacing: 0.02em;
+}
+.site-title:hover { text-decoration: none; color: var(--oxide); }
+
+.main-nav ul { list-style: none; display: flex; gap: 1.6rem; margin: 0; padding: 0; }
+.main-nav a {
+  color: var(--ink-soft); font-size: 0.9rem; letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.main-nav a:hover { color: var(--oxide); text-decoration: none; }
+.main-nav a[aria-current="page"] { color: var(--ink); border-bottom: 1px solid var(--oxide); padding-bottom: 2px; }
+
+/* ── Hero (home) ───────────────────────────────────────────────────────────── */
+
+.hero { position: relative; }
+.hero__image {
+  display: block; width: 100%; height: clamp(340px, 62vh, 640px);
+  object-fit: cover;
+}
+.hero__caption {
+  position: absolute; left: 0; bottom: 0; right: 0;
+  padding: 2.5rem 1.5rem;
+  background: linear-gradient(to top, rgba(20,16,14,0.55), rgba(20,16,14,0));
+}
+.hero__tagline {
+  max-width: var(--wide); margin: 0 auto;
+  font-family: var(--serif); font-weight: 300;
+  font-size: clamp(1.8rem, 5vw, 3.2rem); line-height: 1.1;
+  color: #fff;
+}
+
+/* ── Gallery landing cards ─────────────────────────────────────────────────── */
+
+.gallery-cards {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.25rem; margin: 2.5rem 0 0; max-width: var(--wide);
+}
+.gallery-card {
+  display: flex; flex-direction: column; justify-content: flex-end;
+  min-height: 220px; padding: 1.5rem;
+  background: var(--wall-2); border: 1px solid var(--hair);
+  color: var(--ink); transition: border-color 0.2s, transform 0.2s;
+}
+.gallery-card:hover { text-decoration: none; border-color: var(--oxide); transform: translateY(-2px); }
+.gallery-card__label { font-family: var(--serif); font-size: 1.6rem; font-weight: 300; }
+.gallery-card__meta { color: var(--ink-soft); font-size: 0.9rem; margin-top: 0.25rem; }
+
+/* ── Gallery (live, step 2) ────────────────────────────────────────────────── */
+
+.gallery-intro { margin: 0 0 1.5rem; font-size: 0.9rem; }
+.gallery {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.75rem; min-height: 200px;
+}
+.gallery__status {
+  grid-column: 1 / -1; color: var(--ink-soft); font-style: italic; padding: 2rem 0;
+}
+.gallery__item {
+  display: block; padding: 0; margin: 0; border: none; cursor: pointer;
+  background: var(--wall-2); overflow: hidden; aspect-ratio: 3 / 2;
+}
+.gallery__thumb {
+  display: block; width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.35s ease, opacity 0.35s ease;
+}
+.gallery__item:hover .gallery__thumb,
+.gallery__item:focus-visible .gallery__thumb { transform: scale(1.04); }
+.gallery__item:focus-visible { outline: 2px solid var(--oxide); outline-offset: 2px; }
+
+/* Lightbox */
+body.lightbox-open { overflow: hidden; }
+.lightbox {
+  position: fixed; inset: 0; z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+}
+.lightbox[hidden] { display: none; }
+.lightbox__backdrop { position: absolute; inset: 0; background: rgba(20, 16, 14, 0.92); }
+.lightbox__figure {
+  position: relative; z-index: 1; margin: 0; max-width: 92vw; max-height: 90vh;
+  display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
+}
+.lightbox__img {
+  max-width: 92vw; max-height: 82vh; width: auto; height: auto;
+  object-fit: contain; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+.lightbox__caption { color: #f3efe8; font-size: 0.9rem; text-align: center; }
+.lightbox__close {
+  position: absolute; top: 1rem; right: 1.25rem; z-index: 2;
+  background: none; border: none; color: #fff; font-size: 2.4rem; line-height: 1;
+  cursor: pointer; opacity: 0.8;
+}
+.lightbox__close:hover { opacity: 1; }
+.lightbox__nav {
+  position: absolute; z-index: 2; top: 50%; transform: translateY(-50%);
+  background: none; border: none; color: #fff; font-size: 3rem; line-height: 1;
+  cursor: pointer; opacity: 0.7; padding: 0.5rem 1rem;
+}
+.lightbox__nav:hover { opacity: 1; }
+.lightbox__prev { left: 0.5rem; }
+.lightbox__next { right: 0.5rem; }
+@media (max-width: 640px) {
+  .lightbox__nav { font-size: 2.2rem; padding: 0.25rem 0.6rem; }
+}
+
+/* ── News ──────────────────────────────────────────────────────────────────── */
+
+.news-list { list-style: none; margin: 2rem 0 0; padding: 0; max-width: var(--measure); }
+.news-item { padding: 1.75rem 0; border-top: 1px solid var(--hair); }
+.news-item:first-child { border-top: none; }
+.news-item__date { display: block; color: var(--ink-soft); font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.news-item__title { margin: 0.4rem 0 0.6rem; font-size: 1.4rem; }
+.news-item__title a { color: var(--ink); }
+.news-item__title a:hover { color: var(--oxide); text-decoration: none; }
+.news-item__excerpt { color: var(--ink-soft); }
+.news-item__excerpt p:last-child { margin-bottom: 0; }
+
+.post-back { font-size: 0.85rem; margin: 0 0 1.5rem; }
+
+/* ── Contact form ──────────────────────────────────────────────────────────── */
+
+.contact-form { max-width: var(--measure); margin-top: 2rem; display: grid; gap: 1.1rem; }
+.contact-form label { display: grid; gap: 0.4rem; font-size: 0.9rem; color: var(--ink-soft); }
+.contact-form input, .contact-form textarea {
+  font: inherit; color: var(--ink);
+  padding: 0.7rem 0.8rem; background: #fff;
+  border: 1px solid var(--hair); border-radius: 2px;
+}
+.contact-form input:focus, .contact-form textarea:focus { outline: 2px solid var(--oxide); border-color: transparent; }
+.contact-form button {
+  justify-self: start; font: inherit; letter-spacing: 0.04em;
+  padding: 0.7rem 1.6rem; border: none; border-radius: 2px;
+  background: var(--oxide); color: #fff; cursor: pointer;
+}
+.contact-form button:hover { background: var(--oxide-dk); }
+
+/* ── Footer ────────────────────────────────────────────────────────────────── */
+
+.site-footer { border-top: 1px solid var(--hair); margin-top: 3rem; }
+.footer-inner { max-width: var(--wide); margin: 0 auto; padding: 2.5rem 1.5rem; }
+.footer-mark { font-family: var(--serif); font-size: 1.1rem; margin: 0 0 0.25rem; }
+.footer-meta { color: var(--ink-soft); font-size: 0.85rem; margin: 0; }
+
+/* ── Small screens ─────────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .header-inner { flex-direction: column; align-items: flex-start; gap: 0.9rem; }
+  .main-nav ul { gap: 1.1rem; flex-wrap: wrap; }
+}

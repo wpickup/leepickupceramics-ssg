@@ -1,0 +1,30 @@
+<%# encoding: utf-8 %>
+<%
+  page_title    = "News — #{SITE_TITLE}"
+  description   = "Exhibitions, open studios and pop-up shops from Lee Pickup Ceramics."
+  canonical_url = "#{SITE_URL}/news.html"
+-%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%= renderer.partial('head', page_title: page_title, description: description, canonical_url: canonical_url, root: root) %>
+</head>
+<body class="page-news">
+<%= renderer.partial('header', root: root, current: 'news') %>
+  <main id="main-content">
+    <div class="page-body container">
+      <h1>News</h1>
+      <ul class="news-list">
+<%- posts.each do |post| -%>
+        <li class="news-item">
+          <time class="news-item__date" datetime="<%= post.date_iso %>"><%= post.date_display %></time>
+          <h2 class="news-item__title"><a href="<%= root %>news/<%= post.slug %>.html"><%= h(post.title) %></a></h2>
+          <div class="news-item__excerpt"><%= post.content_html %></div>
+        </li>
+<%- end -%>
+      </ul>
+    </div>
+  </main>
+<%= renderer.partial('footer', root: root) %>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<%# encoding: utf-8 %>
+<%
+  page_title    = "#{post.title} — #{SITE_TITLE}"
+  description   = SITE_DESC
+  canonical_url = post.url
+-%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%= renderer.partial('head', page_title: page_title, description: description, canonical_url: canonical_url, root: root) %>
+</head>
+<body class="page-post">
+<%= renderer.partial('header', root: root, current: 'news') %>
+  <main id="main-content">
+    <article class="page-body container">
+      <p class="post-back"><a href="<%= root %>news.html">&larr; News</a></p>
+      <time class="news-item__date" datetime="<%= post.date_iso %>"><%= post.date_display %></time>
+      <h1><%= h(post.title) %></h1>
+      <div class="content">
+        <%= post.content_html %>
+      </div>
+    </article>
+  </main>
+<%= renderer.partial('footer', root: root) %>
+</body>
+</html>

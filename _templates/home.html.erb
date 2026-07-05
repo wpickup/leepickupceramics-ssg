@@ -1,0 +1,30 @@
+<%# encoding: utf-8 %>
+<%
+  page_title    = SITE_TITLE
+  description   = SITE_DESC
+  canonical_url = "#{SITE_URL}/"
+-%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<%= renderer.partial('head', page_title: page_title, description: description, canonical_url: canonical_url, root: root) %>
+</head>
+<body class="page-home">
+<%= renderer.partial('header', root: root, current: 'home') %>
+  <main id="main-content">
+    <section class="hero">
+      <img class="hero__image" src="<%= root %>assets/hero.jpg" alt="A hand made ceramic piece by Lee Pickup">
+      <div class="hero__caption">
+        <p class="hero__tagline">Hand made ceramics<br>for everyday use</p>
+      </div>
+    </section>
+    <div class="page-body container">
+      <div class="content lead">
+        <%= page.content_html %>
+      </div>
+      <p class="cta"><a href="<%= root %>gallery.html">View recent work &rarr;</a></p>
+    </div>
+  </main>
+<%= renderer.partial('footer', root: root) %>
+</body>
+</html>

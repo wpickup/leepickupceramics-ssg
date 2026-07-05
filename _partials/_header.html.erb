@@ -1,0 +1,14 @@
+<%- gallery = current.to_s.start_with?('gallery') -%>
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="<%= root %>index.html" class="site-title">Lee Pickup Ceramics</a>
+      <nav class="main-nav" aria-label="Primary navigation">
+        <ul>
+          <li><a href="<%= root %>index.html"<%= ' aria-current="page"' if current == 'home' %>>Home</a></li>
+          <li><a href="<%= root %>gallery.html"<%= ' aria-current="page"' if gallery %>>Gallery</a></li>
+          <li><a href="<%= root %>news.html"<%= ' aria-current="page"' if current == 'news' %>>News</a></li>
+          <li><a href="<%= root %>contact.html"<%= ' aria-current="page"' if current == 'contact' %>>Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
