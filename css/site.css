@@ -208,6 +208,11 @@ body.lightbox-open { overflow: hidden; }
   background: var(--oxide); color: #fff; cursor: pointer;
 }
 .contact-form button:hover { background: var(--oxide-dk); }
+.contact-form button:disabled { opacity: 0.6; cursor: default; }
+.contact-form__hp { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.contact-form__status { font-size: 0.9rem; min-height: 1.2em; }
+.contact-form__status--ok { color: var(--oxide-dk); }
+.contact-form__status--error { color: #a33; }
 
 /* ── Footer ────────────────────────────────────────────────────────────────── */
 

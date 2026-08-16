@@ -11,7 +11,7 @@ I'd love to hear from you — whether you're interested in commissioning a piece
 - **Instagram** — [@leepickupceramics](https://instagram.com/leepickupceramics)
 - **Location** — Sydney's Northern Beaches, NSW, Australia
 
-<form class="contact-form" method="post" action="#">
+<form class="contact-form">
   <label>Name
     <input type="text" name="name" required>
   </label>
@@ -32,6 +32,9 @@ I'd love to hear from you — whether you're interested in commissioning a piece
   </label>
   <label>Message
     <textarea name="message" rows="6" required></textarea>
+  </label>
+  <label class="contact-form__hp" aria-hidden="true">Leave this field blank
+    <input type="text" name="website" tabindex="-1" autocomplete="off">
   </label>
   <button type="submit">Send message</button>
 </form>
