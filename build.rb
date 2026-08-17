@@ -171,6 +171,11 @@ def build
     puts "  #{File.basename(src)}/"
   end
 
+  # GitHub Pages custom domain — read on every Pages build regardless of the
+  # repo's dashboard "Custom domain" setting, so the apex keeps working even
+  # if that setting is ever cleared.
+  File.write(File.join(OUT_DIR, 'CNAME'), 'leepickupceramics.com')
+
   puts "\nDone. #{pages.length} pages · #{posts.length} posts"
 end
 

@@ -1,17 +1,29 @@
 name: Deploy
 
-# Manual trigger only (like williampickup-ssg). This rsyncs the build into the
-# `site/` RELEASE dir (DEPLOY_PATH) — it does NOT touch the docroot symlink.
-# Going live is a separate, deliberate step: flip `current -> site` with
-# golive.sh. Once flipped, subsequent runs of this workflow are immediately live.
+# Builds with Ruby and publishes _out/ straight to GitHub Pages via the
+# native Pages deployment (no gh-pages branch, no rsync/SSH). Runs on every
+# push to main, plus manual dispatch for re-deploys with no content change.
+#
+# One-time repo setup (Settings → Pages) needed before this can go live:
+# Source = "GitHub Actions". The custom domain (leepickupceramics.com) is
+# set via a CNAME file written into _out/ by build.rb, not the dashboard
+# field, so it survives even if Pages settings ever get reset.
 on:
+  push:
+    branches: [main]
   workflow_dispatch: {}
 
 permissions:
   contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -26,18 +38,18 @@ jobs:
       - name: Build site
         run: bundle exec ruby build.rb
 
-      - name: Set up deploy key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _out
 
-      - name: Deploy via rsync
-        run: |
-          rsync -avz --delete \
-            --omit-dir-times \
-            --no-perms \
-            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes" \
-            --exclude '.DS_Store' \
-            _out/ "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }}"
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

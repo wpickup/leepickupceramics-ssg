@@ -36,59 +36,42 @@ mount points; `assets/gallery.js` fetches a live JSON feed from the
 shared-album handshake server-side. New/removed photos in Lee's shared albums
 appear with no rebuild.
 
-## Deploy — symlink-swap model
+## Deploy — GitHub Pages
 
-Hosted on the OpenBSD VPS (`67.219.101.93`), served by `httpd` behind `relayd`
-(see [server-config](../server-config)). OpenBSD's `httpd` is chrooted to
-`/var/www`, so its `root ".../current"` is the real path
-`/var/www/htdocs/leepickupceramics.com/current` — a **symlink** you flip:
+Part of the broader "Exit Vultr" migration — this site left the OpenBSD VPS
+behind in favour of GitHub Pages (no server, no SSH keys, no symlink-swap).
+`.github/workflows/deploy.yml` builds with Ruby and publishes `_out/`
+straight to Pages via `actions/upload-pages-artifact` +
+`actions/deploy-pages` on every push to `main` (or manual dispatch).
 
-```
-current -> site         → the Ruby SSG build is live
-current -> maintenance  → holding page (site offline)
-```
+**One-time repo setup**, after the first push:
 
-Deploys only ever write into the **`site/` release dir**; going live/offline is
-a separate, deliberate `current` flip (`golive.sh`). This reuses the exact
-symlink mechanism the old Node project (`../leepickupceramics.site`, now parked)
-used for its maintenance toggle, and keeps that parked project's files in the
-docroot but web-invisible (httpd only serves `current`).
+1. Settings → Pages → **Source: GitHub Actions** (not "Deploy from a branch").
+2. That's it for secrets — this workflow uses the built-in `GITHUB_TOKEN`
+   via OIDC (`id-token: write` in the workflow), no repository secrets to
+   configure.
 
-**Locally:**
+**Custom domain:** `build.rb` writes a `CNAME` file (`leepickupceramics.com`)
+into `_out/` on every build, so the apex domain is set via the published
+artifact itself rather than the Pages dashboard field — it survives even if
+that setting is ever cleared. DNS still needs an apex record pointed at
+GitHub Pages (A records to GitHub's IPs, or an ALIAS/ANAME if the DNS host
+supports it) — see the DNS-to-Porkbun step of the Exit Vultr plan.
+
+**Locally**, just build and preview — there's no separate deploy step to run:
 
 ```bash
-DEPLOY_DEST=user@67.219.101.93:/var/www/htdocs/leepickupceramics.com/site/ ./deploy.sh
-REMOTE=user@67.219.101.93 ./golive.sh live    # flip current -> site (go live)
-REMOTE=user@67.219.101.93 ./golive.sh maintenance   # take offline
+ruby build.rb
+python3 -m http.server 8902 --directory _out
 ```
-
-**Via CI:** `.github/workflows/deploy.yml` runs on manual dispatch
-(Actions tab → *Deploy* → *Run workflow*), rsyncing the build into `site/`.
-Four repository secrets — same values as williampickup-ssg except `DEPLOY_PATH`:
-
-| Secret | Value |
-|---|---|
-| `DEPLOY_SSH_KEY` | the deploy private key (same one williampickup-ssg uses) |
-| `DEPLOY_HOST` | `67.219.101.93` |
-| `DEPLOY_USER` | the deploy user on the box |
-| `DEPLOY_PATH` | `/var/www/htdocs/leepickupceramics.com/site/` |
-
-**Go-live sequence (one-time cutover):**
-
-1. Run the workflow (or `deploy.sh`) once to populate `.../site/`.
-2. Check it, then `./golive.sh live` to flip `current -> site`.
-3. From then on, every deploy rsyncs into `site/` and is immediately live;
-   `./golive.sh maintenance` takes it offline again.
-
-> The `--delete` rsync is safe here because it targets the dedicated `site/`
-> dir, not the docroot (so it can't clobber the parked Node project or the
-> `current`/`maintenance` symlinks).
 
 ## Still to do
 
 - `assets/hero.jpg` is a placeholder (first Current-Work photo) — swap for one
   Lee chooses.
-- Contact form has no handler yet.
+- DNS for leepickupceramics.com still needs to point at GitHub Pages (see
+  Exit Vultr plan) — until then this deploys correctly but isn't reachable at
+  the real domain.
 
 ## On the parked Node project (`../leepickupceramics.site`)
 
