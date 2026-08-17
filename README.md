@@ -2,9 +2,9 @@
 
 Static site generator for **leepickupceramics.com**, replacing the old
 (unsupported) RapidWeaver build. Same proven `build.rb` / ERB / kramdown
-plumbing as [williampickup-ssg](../williampickup-ssg) and
-[gaiayoga-ssg](../gaiayoga-ssg), with its own small content model and a
-distinct gallery-forward visual identity.
+plumbing as `williampickup-ssg` (`~/dev/williampickup-ssg` — not a sibling
+of this repo) and [gaiayoga-ssg](../gaiayoga-ssg), with its own small
+content model and a distinct gallery-forward visual identity.
 
 ## Structure
 
@@ -69,9 +69,15 @@ python3 -m http.server 8902 --directory _out
 
 - `assets/hero.jpg` is a placeholder (first Current-Work photo) — swap for one
   Lee chooses.
-- DNS for leepickupceramics.com still needs to point at GitHub Pages (see
-  Exit Vultr plan) — until then this deploys correctly but isn't reachable at
-  the real domain.
+
+DNS is live as of 2026-08-17 — `leepickupceramics.com` and `www` both point
+at GitHub Pages and serve over HTTPS. One gotcha hit during that cutover
+worth knowing about: GitHub Pages' own "custom domain" setting doesn't get
+picked up automatically from the `CNAME` file when deploying via
+`actions/deploy-pages` (unlike the older branch-based Pages deploy) — it had
+to be set explicitly via `gh api -X PUT repos/.../pages -f
+cname=leepickupceramics.com`, then `-F https_enforced=true` once the cert
+issued. Worth checking for on any future GitHub Pages site set up this way.
 
 ## On the parked Node project (`../leepickupceramics.site`)
 
@@ -89,5 +95,9 @@ Ideas worth borrowing from it later:
 - **Responsive image variants / WebP** for local images (the galleries already
   get sized previews from the Worker).
 
-> ⚠️ Its `scratch.txt` contains the **production CMS password in cleartext** —
-> rotate it and remove it from the file regardless of this project's fate.
+Its `scratch.txt` (containing the production CMS password in cleartext) was
+removed 2026-08-16 when the CMS backend itself was decommissioned — see
+[server-config](../server-config)'s README. It's still in that repo's git
+history (2 commits, pushed to the private `wpickup/leepickupceramics.site`
+remote); left as-is rather than rewritten, since the repo is private and the
+password was never reused anywhere else.
