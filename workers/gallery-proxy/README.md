@@ -60,6 +60,7 @@ Current album tokens:
 
 Uses the existing `williampickup` Cloudflare account (same one as
 `wp-feed-proxy`). No secrets or bindings — it only proxies public album data.
+
 Wrangler is pinned in `workers/package.json`; run these from `workers/`
 (see [`../README.md`](../README.md)):
 

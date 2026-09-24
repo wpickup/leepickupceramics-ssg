@@ -96,14 +96,22 @@ validates the config without uploading anything.
 
 To see whether what's in this repo still matches what's live — e.g. after
 an edit made in the Cloudflare dashboard — download the deployed version
-and compare:
+and compare it with a bundle of the repo's copy. Cloudflare only stores the
+*bundled* Worker (comments stripped, quotes normalised, `const` → `var`, …),
+so comparing it with `src/index.js` directly always shows harmless noise;
+bundling the repo's copy the same way first gives an exact comparison:
 
 ```sh
 cd workers
-npx wrangler init live-check --from-dash lpc-contact-worker   # or lpc-gallery-proxy
-diff live-check/src/index.js contact/src/index.js
-rm -rf live-check
+npx wrangler init live-check --from-dash lpc-contact-worker   # say no to git and to deploying
+cd contact && npx wrangler deploy --dry-run --outdir ../bundle-check && cd ..
+diff bundle-check/index.js live-check/src/index.js && echo "identical"
+rm -rf bundle-check live-check
 ```
+
+(For the gallery Worker, use `lpc-gallery-proxy` and `cd gallery-proxy`.)
+Answer **no** when `wrangler init` asks about git: inside this repo, yes
+can make it commit the downloaded project onto your current branch.
 
 Treat this repo as the source of truth: make changes here and deploy them,
 rather than editing in the dashboard.
