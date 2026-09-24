@@ -45,6 +45,11 @@ posts it as JSON to the `lpc-contact-worker` Cloudflare Worker
 message. Without JavaScript, the plain email link above the form is the
 fallback.
 
+Spam protection is a Cloudflare Turnstile check above the Send button,
+whose token the Worker verifies before sending. Its public site key is
+`data-sitekey` in `_pages/contact.md`; setup, and the order to switch it
+on in, are in [`workers/contact/README.md`](workers/contact/README.md#spam-protection-turnstile).
+
 ## Cloudflare Workers
 
 Both Workers' source lives in [`workers/`](workers/README.md), with

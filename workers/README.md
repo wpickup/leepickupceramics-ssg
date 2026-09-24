@@ -44,8 +44,9 @@ anything might have been edited in the dashboard (see below).
 
 ## Secrets
 
-Never commit secrets — this repo is public. Anything sensitive (an email
-service API key, a spam-check secret, …) is stored in Cloudflare:
+Never commit secrets — this repo is public. Anything sensitive is stored
+in Cloudflare. The contact Worker has two: `RESEND_API_KEY` and
+`TURNSTILE_SECRET_KEY`; the gallery proxy has none.
 
 ```sh
 npx wrangler secret list --name lpc-contact-worker    # names only, never values
@@ -80,11 +81,14 @@ rather than building photos in.
 
 ```json
 { "name": "…", "email": "…", "phone": "…", "inquiryType": "general",
-  "message": "…", "website": "", "loadedAt": 1727150000000 }
+  "message": "…", "website": "", "loadedAt": 1727150000000,
+  "turnstileToken": "…" }
 ```
 
 `website` is a honeypot field (a hidden input real visitors leave empty)
 and `loadedAt` is when the page loaded (for a too-fast-to-be-human check).
+`turnstileToken` is the Cloudflare Turnstile token the Worker verifies
+before sending — see [`contact/README.md`](contact/README.md#spam-protection-turnstile).
 Responds `{ "ok": true }` on success, or `{ "ok": false, "error": "…" }`
 (whose message is shown to the visitor) with a non-2xx status on failure.
 Must send CORS headers allowing `https://leepickupceramics.com`.

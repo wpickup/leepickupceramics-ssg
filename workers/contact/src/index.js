@@ -3,8 +3,14 @@
 // Receives the contact form's POST as JSON from leepickupceramics.com,
 // does light spam filtering (honeypot + minimum time-on-page), and
 // forwards the message to Lee via Resend. Same Cloudflare account as
-// lpc-gallery-proxy, but this one has a secret (RESEND_API_KEY) and a
-// locked-down CORS origin since it has a side effect.
+// lpc-gallery-proxy, but this one has secrets (RESEND_API_KEY,
+// TURNSTILE_SECRET_KEY) and a locked-down CORS origin since it has a side
+// effect.
+//
+// The Origin check and the time trap only stop browsers and lazy bots — a
+// script can fake both. The real gate is Cloudflare Turnstile: the form
+// sends a single-use token that this Worker verifies with Cloudflare before
+// sending anything, so the Resend quota can't be burned by a script.
 
 const ALLOWED_ORIGINS = new Set([
   'https://leepickupceramics.com',
@@ -23,6 +29,30 @@ const INQUIRY_LABELS = {
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const TURNSTILE_VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
+// Must match the `action` contact.js passes to turnstile.render().
+const TURNSTILE_ACTION = 'contact';
+const ALLOWED_HOSTNAMES = new Set(['leepickupceramics.com', 'www.leepickupceramics.com']);
+
+// Asks Cloudflare whether a Turnstile token is genuine. Each token can only
+// be verified once, and only within 5 minutes of being issued. Also checks
+// the token was issued for this site's form (hostname + action), so a token
+// solved on some other page using the same widget can't be replayed here.
+async function verifyTurnstile(token, secret, ip) {
+  const form = new FormData();
+  form.append('secret', secret);
+  form.append('response', token);
+  if (ip) form.append('remoteip', ip);
+
+  const res = await fetch(TURNSTILE_VERIFY_URL, { method: 'POST', body: form });
+  const result = await res.json().catch(() => ({}));
+  return (
+    result.success === true &&
+    ALLOWED_HOSTNAMES.has(result.hostname) &&
+    result.action === TURNSTILE_ACTION
+  );
+}
 
 function corsHeaders(origin) {
   const allowed = ALLOWED_ORIGINS.has(origin) ? origin : '';
@@ -90,6 +120,27 @@ export default {
     }
     if (name.length > 200 || email.length > 200 || message.length > 5000) {
       return json({ ok: false, error: 'One of the fields is too long.' }, 400, origin);
+    }
+
+    // Checked after field validation, so fixing a typo doesn't need a fresh
+    // challenge from Cloudflare's side (the form resets the widget anyway).
+    if (!env.TURNSTILE_SECRET_KEY) {
+      console.error('TURNSTILE_SECRET_KEY is not set');
+      return json({ ok: false, error: 'The form is temporarily unavailable.' }, 500, origin);
+    }
+    const token = String(body.turnstileToken || '');
+    if (!token || token.length > 2048) {
+      return json({ ok: false, error: 'Please complete the spam check above the Send button.' }, 400, origin);
+    }
+    let human;
+    try {
+      human = await verifyTurnstile(token, env.TURNSTILE_SECRET_KEY, request.headers.get('CF-Connecting-IP'));
+    } catch (err) {
+      console.error('Turnstile verify failed', err);
+      return json({ ok: false, error: 'Could not check the spam protection — please try again.' }, 502, origin);
+    }
+    if (!human) {
+      return json({ ok: false, error: 'The spam check didn\'t pass — please try again.' }, 403, origin);
     }
 
     const inquiryLabel = INQUIRY_LABELS[inquiryType] || inquiryType;
