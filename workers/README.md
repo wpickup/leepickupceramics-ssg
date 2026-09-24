@@ -110,8 +110,9 @@ rm -rf bundle-check live-check
 ```
 
 (For the gallery Worker, use `lpc-gallery-proxy` and `cd gallery-proxy`.)
-Answer **no** when `wrangler init` asks about git: inside this repo, yes
-can make it commit the downloaded project onto your current branch.
+Answer **no** when `wrangler init` asks about git or deploying — the
+download is only a temporary copy for comparison, so it shouldn't be set up
+as a project in its own right.
 
 Treat this repo as the source of truth: make changes here and deploy them,
 rather than editing in the dashboard.
