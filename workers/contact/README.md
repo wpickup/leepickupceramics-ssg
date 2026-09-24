@@ -52,7 +52,9 @@ this endpoint has a side effect (sends an email), so it shouldn't be `*`.
 ## Deploy
 
 Uses the existing `williampickup` Cloudflare account (same one as
-`lpc-gallery-proxy`). Wrangler is pinned in `workers/package.json`; run these from `workers/`
+`lpc-gallery-proxy`).
+
+Wrangler is pinned in `workers/package.json`; run these from `workers/`
 (see [`../README.md`](../README.md)):
 
 ```bash
