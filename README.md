@@ -14,7 +14,8 @@ _posts/     news posts (front matter + body)
 _templates/ ERB page templates
 _partials/  ERB head/header/footer
 css/        site.css
-assets/     hero image, gallery.js
+assets/     hero image, gallery.js, contact.js
+workers/    the two Cloudflare Workers the site calls (see workers/README.md)
 build.rb    the generator  →  _out/
 ```
 
@@ -31,10 +32,25 @@ python3 -m http.server 8902 --directory _out
 
 Photos are **not** built in. The two gallery pages are `.gallery[data-album]`
 mount points; `assets/gallery.js` fetches a live JSON feed from the
-[lpc-gallery-proxy](../leepickupceramics-gallery-worker) Cloudflare Worker
+`lpc-gallery-proxy` Cloudflare Worker
 (`https://lpc-gallery-proxy.williampickup.workers.dev`), which does Apple's
 shared-album handshake server-side. New/removed photos in Lee's shared albums
 appear with no rebuild.
+
+## Contact form
+
+The form on the contact page is progressive enhancement: `assets/contact.js`
+posts it as JSON to the `lpc-contact-worker` Cloudflare Worker
+(`https://lpc-contact-worker.williampickup.workers.dev`), which delivers the
+message. Without JavaScript, the plain email link above the form is the
+fallback.
+
+## Cloudflare Workers
+
+Both Workers' source lives in [`workers/`](workers/README.md), with
+Wrangler pinned there. They're deployed by hand (`npm run deploy:gallery` /
+`npm run deploy:contact` inside `workers/`), not by the site's GitHub
+Actions workflow, which skips pushes that only change `workers/`.
 
 ## Deploy — GitHub Pages
 

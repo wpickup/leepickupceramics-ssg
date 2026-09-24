@@ -1,0 +1,14 @@
+{
+  "name": "leepickupceramics-workers",
+  "private": true,
+  "description": "Cloudflare Workers used by leepickupceramics.com — see README.md",
+  "scripts": {
+    "dev:gallery": "cd gallery-proxy && wrangler dev",
+    "dev:contact": "cd contact && wrangler dev",
+    "deploy:gallery": "cd gallery-proxy && wrangler deploy",
+    "deploy:contact": "cd contact && wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "4.137.0"
+  }
+}

@@ -1,0 +1,7 @@
+node_modules/
+.wrangler/
+# Local-only secrets for `wrangler dev` — never commit these. Production
+# secrets live in Cloudflare (`npx wrangler secret put …`).
+.dev.vars
+.dev.vars.*
+.env
