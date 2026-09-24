@@ -38,9 +38,9 @@ npm run deploy:contact   # lpc-contact-worker
 `npm run dev:gallery` / `npm run dev:contact` run one locally with
 `wrangler dev`.
 
-Each Worker's config file (`wrangler.toml` or `wrangler.jsonc`) sets its
-`name`, and deploying **replaces the live Worker of that name** — so only
-deploy code that came from, or was checked against, what's live.
+Each Worker's `wrangler.toml` sets its `name`, and deploying **replaces the
+live Worker of that name** — so deploy from this repo, and check first if
+anything might have been edited in the dashboard (see below).
 
 ## Secrets
 
@@ -62,16 +62,19 @@ them together with `assets/gallery.js` / `assets/contact.js`.
 
 **`lpc-gallery-proxy`** — `GET /?album=<token>`, where `<token>` is the
 shared-album token from a gallery page's `data-album` attribute. Returns
-JSON:
+JSON (full example in [`gallery-proxy/README.md`](gallery-proxy/README.md)):
 
 ```json
-{ "photos": [ { "preview": "https://…", "preview_w": 800, "preview_h": 600,
-                "full": "https://…", "caption": "…" } ] }
+{ "album": "…", "name": "…", "count": 1,
+  "photos": [ { "guid": "…", "caption": "", "date": "…", "width": 2305, "height": 1537,
+                "preview": "https://…", "preview_w": 385, "preview_h": 257,
+                "full": "https://…" } ] }
 ```
 
-`preview_w`/`preview_h` and `caption` are optional. Apple's image URLs
-expire after about a day, which is why the site fetches fresh on every
-visit rather than building photos in.
+`gallery.js` uses `photos[].preview`, `preview_w`/`preview_h`, `full` and
+`caption`. Apple's image URLs expire after about a day, which is why the
+site fetches fresh on every visit (the Worker caches for 15 minutes)
+rather than building photos in.
 
 **`lpc-contact-worker`** — `POST /` with a JSON body:
 
@@ -86,50 +89,21 @@ Responds `{ "ok": true }` on success, or `{ "ok": false, "error": "…" }`
 (whose message is shown to the visitor) with a non-2xx status on failure.
 Must send CORS headers allowing `https://leepickupceramics.com`.
 
-## Bringing the source in (one-time)
+## Checking a change before deploying
 
-Until this is done, the `gallery-proxy/` and `contact/` folders don't exist
-and the npm scripts above fail harmlessly.
+`npx wrangler deploy --dry-run` (run inside a Worker's folder) bundles it and
+validates the config without uploading anything.
 
-**Gallery proxy** — its source is in a local folder,
-`leepickupceramics-gallery-worker`, next to where this repo used to live
-on the Mac:
-
-```sh
-cd workers
-mkdir gallery-proxy
-cp -R ~/path/to/leepickupceramics-gallery-worker/. gallery-proxy/
-rm -rf gallery-proxy/.git gallery-proxy/node_modules gallery-proxy/.wrangler
-```
-
-Then delete its own `package.json`/`package-lock.json` if it has them
-(Wrangler comes from `workers/package.json`). To confirm the local copy
-matches what's actually deployed, download the live version and compare:
-
-```sh
-npx wrangler init live-gallery --from-dash lpc-gallery-proxy
-diff -r live-gallery/src gallery-proxy/src    # adjust paths to match
-rm -rf live-gallery
-```
-
-**Contact worker** — no local copy is known, so download it from
-Cloudflare (or copy it from the dashboard's code editor):
+To see whether what's in this repo still matches what's live — e.g. after
+an edit made in the Cloudflare dashboard — download the deployed version
+and compare:
 
 ```sh
 cd workers
-npx wrangler init contact --from-dash lpc-contact-worker
+npx wrangler init live-check --from-dash lpc-contact-worker   # or lpc-gallery-proxy
+diff live-check/src/index.js contact/src/index.js
+rm -rf live-check
 ```
 
-`wrangler init` may ask a few questions (say **no** to git and to
-deploying). Then trim it to the source and config: keep `src/` and
-`wrangler.jsonc` (or `wrangler.toml`), delete the generated
-`package.json`, lockfile, `node_modules/`, `.git/` and any test setup.
-
-**Before committing either one**, check for secrets written directly into
-the code or config:
-
-```sh
-grep -rniE "key|token|secret|password|api" gallery-proxy contact
-```
-
-Anything real belongs in `wrangler secret put`, not in the repo.
+Treat this repo as the source of truth: make changes here and deploy them,
+rather than editing in the dashboard.

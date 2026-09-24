@@ -13,7 +13,8 @@ does Apple's 3-step handshake server-side and returns clean, CORS-enabled JSON,
 so the page's `gallery.js` stays a dumb consumer.
 
 The Apple protocol is ported directly from the proven Ruby implementation in
-`../leepickupceramics-migration/fetch_gallery.rb`.
+`fetch_gallery.rb` from the RapidWeaver-migration project (kept outside this
+repo, in `leepickupceramics-migration`).
 
 ## API
 
@@ -59,14 +60,17 @@ Current album tokens:
 
 Uses the existing `williampickup` Cloudflare account (same one as
 `wp-feed-proxy`). No secrets or bindings — it only proxies public album data.
+Wrangler is pinned in `workers/package.json`; run these from `workers/`
+(see [`../README.md`](../README.md)):
 
 ```bash
-npm install
-npx wrangler deploy      # first run: npx wrangler login
+npm install                # once
+npx wrangler login         # first time only
+npm run deploy:gallery
 ```
 
 Deploys to `https://lpc-gallery-proxy.<subdomain>.workers.dev`. That URL is the
-default `DEFAULT_ENDPOINT` in `leepickupceramics-ssg/assets/gallery.js` — update
+default `DEFAULT_ENDPOINT` in `assets/gallery.js` — update
 it there if the deployed hostname differs.
 
 ## Notes / possible follow-ups
