@@ -1,0 +1,10 @@
+name = "lpc-contact-worker"
+main = "src/index.js"
+compatibility_date = "2026-08-01"
+
+# Receives the contact form POST from leepickupceramics.com and forwards it
+# to Lee via Resend. Deploys to
+# https://lpc-contact-worker.<your-subdomain>.workers.dev
+#
+# Needs one secret, set once via:
+#   wrangler secret put RESEND_API_KEY
