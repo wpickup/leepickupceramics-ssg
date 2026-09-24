@@ -36,6 +36,9 @@ I'd love to hear from you — whether you're interested in commissioning a piece
   <label class="contact-form__hp" aria-hidden="true">Leave this field blank
     <input type="text" name="website" tabindex="-1" autocomplete="off">
   </label>
+  <!-- Cloudflare Turnstile spam check. data-sitekey is the widget's public
+       site key; while it's empty, no check is shown (see workers/contact/README.md). -->
+  <div class="contact-form__turnstile" data-sitekey=""></div>
   <button type="submit">Send message</button>
 </form>
 
