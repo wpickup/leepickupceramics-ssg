@@ -38,7 +38,7 @@ I'd love to hear from you — whether you're interested in commissioning a piece
   </label>
   <!-- Cloudflare Turnstile spam check. data-sitekey is the widget's public
        site key; while it's empty, no check is shown (see workers/contact/README.md). -->
-  <div class="contact-form__turnstile" data-sitekey=""></div>
+  <div class="contact-form__turnstile" data-sitekey="0x4AAAAAAFB_tDHVvXBeJa3I"></div>
   <button type="submit">Send message</button>
 </form>
 
