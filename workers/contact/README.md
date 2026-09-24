@@ -19,7 +19,7 @@ submission data off a third-party form SaaS.
 
 ## How it works
 
-`leepickupceramics-ssg/assets/contact.js` POSTs the form as JSON to this
+`assets/contact.js` POSTs the form as JSON to this
 Worker. The Worker does light spam filtering (a honeypot field + a
 minimum-time-on-page check), validates the required fields, and calls
 Resend's API to email `lee@leepickupceramics.com` with `reply_to` set to
@@ -52,26 +52,28 @@ this endpoint has a side effect (sends an email), so it shouldn't be `*`.
 ## Deploy
 
 Uses the existing `williampickup` Cloudflare account (same one as
-`lpc-gallery-proxy`).
+`lpc-gallery-proxy`). Wrangler is pinned in `workers/package.json`; run these from `workers/`
+(see [`../README.md`](../README.md)):
 
 ```bash
-npm install
-npx wrangler deploy      # first run: npx wrangler login
+npm install                # once
+npx wrangler login         # first time only
+npm run deploy:contact
 ```
 
 Deploys to `https://lpc-contact-worker.<subdomain>.workers.dev`. That URL
-is `ENDPOINT` in `leepickupceramics-ssg/assets/contact.js` — update it
+is `ENDPOINT` in `assets/contact.js` — update it
 there if the deployed hostname differs.
 
 ## Testing locally
 
 ```bash
-npx wrangler dev
+npm run dev:contact      # from workers/
 ```
 
-`wrangler dev` doesn't expose secrets from the deployed environment by
-default — pass `--var RESEND_API_KEY:<key>` for a local-only test send, or
-just deploy and test against the real form once the domain is verified.
+`wrangler dev` doesn't expose secrets from the deployed environment — put
+`RESEND_API_KEY=<key>` in a `.dev.vars` file in this folder (gitignored) for
+a local-only test send, or just deploy and test against the real form.
 
 ## Notes / possible follow-ups
 
