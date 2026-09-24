@@ -11,6 +11,11 @@ name: Deploy
 on:
   push:
     branches: [main]
+    # Cloudflare Worker source isn't part of the static site and is deployed
+    # separately with Wrangler (see workers/README.md), so a push that only
+    # touches workers/ doesn't need a site rebuild.
+    paths-ignore:
+      - 'workers/**'
   workflow_dispatch: {}
 
 permissions:
