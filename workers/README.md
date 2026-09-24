@@ -103,13 +103,15 @@ bundling the repo's copy the same way first gives an exact comparison:
 
 ```sh
 cd workers
-npx wrangler init live-check --from-dash lpc-contact-worker   # say no to git and to deploying
+npx wrangler init --from-dash lpc-contact-worker   # say no to git and to deploying
 cd contact && npx wrangler deploy --dry-run --outdir ../bundle-check && cd ..
-diff bundle-check/index.js live-check/src/index.js && echo "identical"
-rm -rf bundle-check live-check
+diff bundle-check/index.js lpc-contact-worker/src/index.js && echo "identical"
+rm -rf bundle-check lpc-contact-worker
 ```
 
-(For the gallery Worker, use `lpc-gallery-proxy` and `cd gallery-proxy`.)
+`wrangler init --from-dash` always downloads into a folder named after the
+Worker (`lpc-contact-worker/` here), whatever directory name you pass. For
+the gallery Worker, use `lpc-gallery-proxy` and `cd gallery-proxy`.
 Answer **no** when `wrangler init` asks about git or deploying — the
 download is only a temporary copy for comparison, so it shouldn't be set up
 as a project in its own right.
