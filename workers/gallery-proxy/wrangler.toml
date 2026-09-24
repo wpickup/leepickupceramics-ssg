@@ -1,0 +1,6 @@
+name = "lpc-gallery-proxy"
+main = "src/index.js"
+compatibility_date = "2026-07-01"
+
+# Public read-only proxy — no secrets, no bindings. Deploys to
+# https://lpc-gallery-proxy.<your-subdomain>.workers.dev
