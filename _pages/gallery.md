@@ -3,7 +3,7 @@ page: gallery
 title: Gallery
 ---
 
-A selection of recent and earlier pieces. Photographs are drawn live from Lee's own shared albums, so the galleries stay current as new work is added.
+A selection of recent and earlier pieces.
 
 <div class="gallery-cards">
   <a class="gallery-card" href="gallery/current-work.html">
